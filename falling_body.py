@@ -15,19 +15,39 @@ y(t) = -1/2 * g * t^2 + y_o
 
 """
 def main():
-    x0 , g0 = 10.0, -9.8
-    state = [np.array([g0, x0])]
+    t_0 = 0
+    y_0 = 10.0 # m
+    v_0 = 0.0  # m/s
+    sim_d = [np.array([t_0, v_0, y_0])]
+    sim_a = [np.array([t_0, fall_analytic(t_0, -9.8, y_0)])]
 
-    # Run the simuation for 100 time steps
-    dt = 0.01
-    t_0 = 1
-    t_m = 100
-    for t in range(t_0, t_m):
-        state.append(ode.euler(falling, state[t - 1], dt))
+    print sim_a
 
-    print state
+    #print state
+    #print state[0]
+    #print state[0][1:3]
+
+    # Run the simuation for two seconds.
+    dt = 0.01 # step size
+    t_max = 2 # maximum number of seconds to run. 
+    dt_steps = int(t_max / dt) #number of dt increments to perform
+    for t in range(1, dt_steps + 1):
+        tp1 = np.array([t * dt + t_0])
+        sim_d.append(np.append(tp1, ode.euler(fall, sim_d[t - 1][1:3], dt)))
+
+    # Run the analytic solution to check the simulation.
+    sim_a = np.array([t_0, fall_analytic(t_0, -9.8, y_0)
+    
+
+    #plot the falling object now.
+    state = np.array(state)
+    plt.plot(state[:,0], state[:,1], "r")
+    plt.plot(state[:,0], state[:,2], "b")
+    print state.shape
+    plt.show()
 
     return 0
+
 
 """ Function produced from the 'coupling'
     x: A numpy array of two numbers. The array must be of the form [a, y]
@@ -36,8 +56,11 @@ def main():
 
     For now the function simply assumes the object has a mass of 1.
 """
-def falling(x):
-    return np.array([ x[0], x[1] ])
+def fall(x, g=-9.8):
+    return np.array([ g , x[0] ])
+
+def fall_analytic(t, g, y_0):
+    return -0.5 * g * t**2 + y_0
 
 
 if __name__ == '__main__':
