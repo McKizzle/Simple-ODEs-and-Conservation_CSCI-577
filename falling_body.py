@@ -30,8 +30,8 @@ def main():
     #print sim_d[0][1:3]
 
     # Run the simuation for two seconds.
-    dt = 0.01 # step size
-    t_max = 2 # maximum number of seconds to run. 
+    dt = 0.05 # step size
+    t_max = 1.5 # maximum number of seconds to run. 
     dt_steps = int(t_max / dt) #number of dt increments to perform
     y_p = 10
     for step in range(1, dt_steps + 1):
@@ -42,15 +42,14 @@ def main():
         sim_a.append(np.append(tp1, fall_analytic(t, g, y_0)))
         
 
-    #plot the falling object now.
+    #Plot the falling objects. Euler vs Analytical functions.
     sim_d = np.array(sim_d)
     sim_a = np.array(sim_a)
-    plt.plot(sim_d[:,0], sim_d[:,2], "r")
-    plt.plot(sim_d[:,0], sim_d[:,1], "g")
-    plt.plot(sim_a[:,0], sim_a[:,1], "b")
-    #print sim_d.shape
-    #print sim_a.shape
-    #print sim_a
+    y, = plt.plot(sim_d[:,0], sim_d[:,2], "r")
+    y_anal, = plt.plot(sim_a[:,0], sim_a[:,1], "b")
+    plt.legend([y, y_anal], ["Height", "Analytical Height"])
+    plt.xlabel("Time (sec)")
+    plt.ylabel("Height")
     plt.show()
 
     return 0
