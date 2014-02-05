@@ -15,35 +15,42 @@ y(t) = -1/2 * g * t^2 + y_o
 
 """
 def main():
+    g = 9.8
     t_0 = 0
     y_0 = 10.0 # m
     v_0 = 0.0  # m/s
     sim_d = [np.array([t_0, v_0, y_0])]
     sim_a = [np.array([t_0, fall_analytic(t_0, -9.8, y_0)])]
-
+    
     print sim_a
+    print fall_analytic(t_0, -9.8, y_0)
 
-    #print state
-    #print state[0]
-    #print state[0][1:3]
+    #print sim_d
+    #print sim_d[0]
+    #print sim_d[0][1:3]
 
     # Run the simuation for two seconds.
     dt = 0.01 # step size
     t_max = 2 # maximum number of seconds to run. 
     dt_steps = int(t_max / dt) #number of dt increments to perform
-    for t in range(1, dt_steps + 1):
-        tp1 = np.array([t * dt + t_0])
-        sim_d.append(np.append(tp1, ode.euler(fall, sim_d[t - 1][1:3], dt)))
-
-    # Run the analytic solution to check the simulation.
-    sim_a = np.array([t_0, fall_analytic(t_0, -9.8, y_0)
-    
+    y_p = 10
+    for step in range(1, dt_steps + 1):
+        t = step * dt + t_0
+        tp1 = np.array([t])
+        sim_d.append(np.append(tp1, ode.euler(fall, sim_d[step - 1][1:3], dt, t)))
+            
+        sim_a.append(np.append(tp1, fall_analytic(t, g, y_0)))
+        
 
     #plot the falling object now.
-    state = np.array(state)
-    plt.plot(state[:,0], state[:,1], "r")
-    plt.plot(state[:,0], state[:,2], "b")
-    print state.shape
+    sim_d = np.array(sim_d)
+    sim_a = np.array(sim_a)
+    plt.plot(sim_d[:,0], sim_d[:,2], "r")
+    plt.plot(sim_d[:,0], sim_d[:,1], "g")
+    plt.plot(sim_a[:,0], sim_a[:,1], "b")
+    #print sim_d.shape
+    #print sim_a.shape
+    #print sim_a
     plt.show()
 
     return 0
@@ -56,7 +63,8 @@ def main():
 
     For now the function simply assumes the object has a mass of 1.
 """
-def fall(x, g=-9.8):
+def fall(x, t):
+    g = -9.8
     return np.array([ g , x[0] ])
 
 def fall_analytic(t, g, y_0):
