@@ -35,6 +35,7 @@ def main():
     sim_a = np.array(sim_a)
     sim_d_plt, = plt.plot(sim_d[:,0], sim_d[:,2], "r")
     sim_a_plt, = plt.plot(sim_a[:,0], sim_a[:,1], "b")
+    plt.legend([sim_d_plt, sim_a_plt], ['Body Position', 'Body Position Analytical'])
     plt.show()
 
 def harm_osc(x, t, k=1.0, m=1.0):
