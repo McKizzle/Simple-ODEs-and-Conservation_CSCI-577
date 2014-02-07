@@ -62,6 +62,10 @@ def main():
     plt.ylim([97, 102])
     plt.show()
 
+    #Calculate the energy difference
+    e_diff = abs(sim_a_energy[len(sim_a_energy) - 1] - sim_d_energy[len(sim_d_energy) - 1])
+    print "Energy difference is %0.2fJ" % e_diff
+
     return 0
 
 

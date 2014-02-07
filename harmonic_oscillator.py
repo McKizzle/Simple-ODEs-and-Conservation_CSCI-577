@@ -33,10 +33,7 @@ def main():
         sim_d.append(np.append(tp1, ode.euler(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
         sim_d_e.append(harmonic_energy(sim_d[step][2], sim_d[step][1]))
         sim_a.append(np.append(tp1, [harmonic_analytic_velocity(x_0, t), harmonic_analytic_position(x_0, t)]))
-        sim_a_e.append(harmonic_energy(sim_a[step][2], sim_a[step][1]))
-        #print "Anal: %0.2f, %0.2f, %0.2f" % (sim_a[step][2], sim_a[step][1], harmonic_energy(sim_a[step][2], sim_a[step][1]))
-        #print "Eule: %0.2f, %0.2f, %0.2f" % (sim_d[step][2], sim_d[step][1], harmonic_energy(sim_d[step][2], sim_d[step][1]))
-        
+        sim_a_e.append(harmonic_energy(sim_a[step][2], sim_a[step][1])) 
 
     # Calclate the error at the fith cycle. 
     t_fcyl = 5 * 2 * np.pi
@@ -60,7 +57,11 @@ def main():
     plt.legend([sim_d_e_plt], ['Energy'])
     plt.show()
 
-def error_calc(x): # blows up if both elets are zero
+    # Calculate the diffence between the two systems.
+    e_diff = abs(sim_d_e[len(sim_d_e) - 1] - harmonic_energy(harmonic_analytic_position(x_0, t_max), harmonic_analytic_velocity(x_0, t_max)))
+    print "Energy difference is %0.2fJ" % e_diff
+
+def error_calc(x): 
     x_max = max(x)
     x_min = min(x)
     return (max(x) - min(x))/max(x)
