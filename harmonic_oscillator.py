@@ -20,47 +20,62 @@ def main():
     v_0 = 0.0 # starting velocity
     t_0 = 0.0
     sim_d = [np.array([t_0, v_0, x_0])]
-    sim_a = [np.array([t_0, harm_analytic(x_0, t_0)])]
+    sim_d_e = [harmonic_energy(x_0, v_0)]
+    sim_a = [np.array([t_0, harmonic_analytic_velocity(x_0, t_0), harmonic_analytic_position(x_0, t_0)])]
+    sim_a_e = [harmonic_energy(x_0, v_0)]
 
-    dt = 0.01
-    t_max = int( 5 * 2 * np.pi + 1)
+    dt = 0.0006
+    t_max = int( 5 * 2 * np.pi + 1) # only go out to five cycles. 
     dt_steps = int(t_max / dt) + 1
     for step in range(1, dt_steps):
         t = step * dt + t_0
         tp1 = np.array([t])
-        sim_d.append(np.append(tp1, ode.euler(harm_osc, sim_d[step - 1][1:3], dt, t)))
-        sim_a.append(np.append(tp1, harm_analytic(x_0, t)))
+        sim_d.append(np.append(tp1, ode.euler(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
+        sim_d_e.append(harmonic_energy(sim_d[step][2], sim_d[step][1]))
+        sim_a.append(np.append(tp1, [harmonic_analytic_velocity(x_0, t), harmonic_analytic_position(x_0, t)]))
+        sim_a_e.append(harmonic_energy(sim_a[step][2], sim_a[step][1]))
+        #print "Anal: %0.2f, %0.2f, %0.2f" % (sim_a[step][2], sim_a[step][1], harmonic_energy(sim_a[step][2], sim_a[step][1]))
+        #print "Eule: %0.2f, %0.2f, %0.2f" % (sim_d[step][2], sim_d[step][1], harmonic_energy(sim_d[step][2], sim_d[step][1]))
+        
 
     # Calclate the error at the fith cycle. 
     t_fcyl = 5 * 2 * np.pi
     fcyl_x_d = sim_d[dt_steps - 1][2]
-    fcyl_x_a = sim_a[dt_steps - 1][1]
-    print "The error is: %0.2f" % (error_calc([fcyl_x_d, fcyl_x_a]) * 100)
+    fcyl_x_a = sim_a[dt_steps - 1][2]
+    print "The error is: %0.2f%% percent" % (error_calc([fcyl_x_d, fcyl_x_a]) * 100)
 
     sim_d = np.array(sim_d)
     sim_a = np.array(sim_a)
     sim_d_plt, = plt.plot(sim_d[:,0], sim_d[:,2], "r")
-    sim_a_plt, = plt.plot(sim_a[:,0], sim_a[:,1], "b")
+    sim_a_plt, = plt.plot(sim_a[:,0], sim_a[:,2], "b")
     plt.legend([sim_d_plt, sim_a_plt], ['Body Position', 'Body Position Analytical'])
+    plt.xlabel("Time (s)")
+    plt.ylabel("Position (m)")
     plt.show()
 
-# Calculates the error
-def error_calc(x):
+    # Plot the energies of the two systems. 
+    sim_d_e_plt, = plt.plot(sim_d[:,0], sim_d_e, "r")
+#    sim_a_e_plt, = plt.plot(sim_a[:,0], sim_a_e, "b")
+#    plt.legend([sim_d_e_plt, sim_a_e_plt], ['Energy Euler', 'Energy Analytical'])
+    plt.legend([sim_d_e_plt], ['Energy'])
+    plt.show()
+
+def error_calc(x): # blows up if both elets are zero
     x_max = max(x)
     x_min = min(x)
     return (max(x) - min(x))/max(x)
 
-
-def harm_osc(x, t, k=1.0, m=1.0):
+def harmonic_oscillator(x, t, k=1.0, m=1.0):
     return np.array([ -m * x[1] / k, x[0]])
 
-# Analytic function that returns the position of the object. 
-def harm_analytic(x_0, t, k=1.0, m=1.0):
+def harmonic_analytic_position(x_0, t, k=1.0, m=1.0):
     return x_0 * np.cos((k/m)**0.5 * t)
 
-# Analytic function the returns the velocity. 
-def harm_analytic_velocity(x_0, t, k=1.0, m=1.0):
+def harmonic_analytic_velocity(x_0, t, k=1.0, m=1.0):
     return -0.5 * x_0 * np.sin((k/m)**0.5 * t)
+
+def harmonic_energy(x, v, k=1.0, m=1.0):
+    return 0.5 * (k * x**2 + m * v**2)
 
 if __name__ == '__main__':
     main()
