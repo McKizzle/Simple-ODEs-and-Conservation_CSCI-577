@@ -22,8 +22,8 @@ def main():
     sim_d = [np.array([t_0, v_0, x_0])]
     sim_a = [np.array([t_0, harm_analytic(x_0, t_0)])]
 
-    dt = 0.1
-    t_max = 35
+    dt = 0.01
+    t_max = int( 5 * 2 * np.pi + 1)
     dt_steps = int(t_max / dt) + 1
     for step in range(1, dt_steps):
         t = step * dt + t_0
@@ -31,12 +31,25 @@ def main():
         sim_d.append(np.append(tp1, ode.euler(harm_osc, sim_d[step - 1][1:3], dt, t)))
         sim_a.append(np.append(tp1, harm_analytic(x_0, t)))
 
+    # Calclate the error at the fith cycle. 
+    t_fcyl = 5 * 2 * np.pi
+    fcyl_x_d = sim_d[dt_steps - 1][2]
+    fcyl_x_a = sim_a[dt_steps - 1][1]
+    print "The error is: %0.2f" % (error_calc([fcyl_x_d, fcyl_x_a]) * 100)
+
     sim_d = np.array(sim_d)
     sim_a = np.array(sim_a)
     sim_d_plt, = plt.plot(sim_d[:,0], sim_d[:,2], "r")
     sim_a_plt, = plt.plot(sim_a[:,0], sim_a[:,1], "b")
     plt.legend([sim_d_plt, sim_a_plt], ['Body Position', 'Body Position Analytical'])
     plt.show()
+
+# Calculates the error
+def error_calc(x):
+    x_max = max(x)
+    x_min = min(x)
+    return (max(x) - min(x))/max(x)
+
 
 def harm_osc(x, t, k=1.0, m=1.0):
     return np.array([ -m * x[1] / k, x[0]])
