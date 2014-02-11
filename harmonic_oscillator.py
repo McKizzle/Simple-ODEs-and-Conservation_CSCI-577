@@ -19,30 +19,45 @@ def main():
     x_0 = 1.0 # starting position
     v_0 = 0.0 # starting velocity
     t_0 = 0.0
-    sim_d = [np.array([t_0, v_0, x_0])]
-    sim_d_e = [harmonic_energy(x_0, v_0)]
-    sim_a = [np.array([t_0, harmonic_analytic_velocity(x_0, t_0), harmonic_analytic_position(x_0, t_0)])]
-    sim_a_e = [harmonic_energy(x_0, v_0)]
+    sim_d = [np.array([None, None, None])]
+    sim_d.append(np.array([t_0, v_0, x_0]))
+    
+    sim_d_e = [None]
+    sim_d_e.append(harmonic_energy(x_0, v_0))
+    
+    sim_a = [np.array([None, None, None])]
+    sim_a.append(np.array([t_0, harmonic_analytic_velocity(x_0, t_0), harmonic_analytic_position(x_0, t_0)]))
+    
+    sim_a_e = [None]
+    sim_a_e.append(harmonic_energy(x_0, v_0))
 
     dt = 0.001 #0.0006
     t_max = int( 5 * 2 * np.pi + 1) # only go out to five cycles. 
     dt_steps = int(t_max / dt) + 1
-    for step in range(1, dt_steps):
+    for step in range(2, dt_steps):
         t = step * dt + t_0
         tp1 = np.array([t])
         #sim_d.append(np.append(tp1, ode.euler(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
         #sim_d.append(np.append(tp1, ode.euler_richardson(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
         #sim_d.append(np.append(tp1, ode.rung_kutta(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
-        #sim_d.append(np.append(tp1, ode.rung_kutta(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
+        sim_d.append(np.append(tp1, ode.predictor_corrector(harmonic_oscillator, sim_d[step - 1][1:3], dt, t, ode.rung_kutta, sim_d[step - 2][1:3])))
         sim_d_e.append(harmonic_energy(sim_d[step][2], sim_d[step][1]))
         sim_a.append(np.append(tp1, [harmonic_analytic_velocity(x_0, t), harmonic_analytic_position(x_0, t)]))
         sim_a_e.append(harmonic_energy(sim_a[step][2], sim_a[step][1])) 
 
-    # Calclate the error at the fith cycle. 
+        if(step == 4):
+            exit()
+
+    # Calclate the error at the fifth cycle. 
     t_fcyl = 5 * 2 * np.pi
     fcyl_x_d = sim_d[dt_steps - 1][2]
     fcyl_x_a = sim_a[dt_steps - 1][2]
     print "The error is: %0.2f%% percent" % (error_calc([fcyl_x_d, fcyl_x_a]) * 100)
+
+    sim_d.pop(0)
+    sim_d_e.pop(0)
+    sim_a.pop(0)
+    sim_a_e.pop(0)
 
     sim_d = np.array(sim_d)
     sim_a = np.array(sim_a)

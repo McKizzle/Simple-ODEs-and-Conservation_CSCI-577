@@ -13,7 +13,7 @@ def rung_kutta(f, x, dt, t):
     k_3 = f(x + k_2 / 2.0, t + dt / 2.0) * dt
     k_4 = f(x + k_3 / 2.0, t + dt / 2.0) * dt
 
-    return x + (1.0/6.0) * (k_1 + 2 * k_2 + 2*k_3 + k_4)
+    return x + (1.0/6.0) * (k_1 + 2 * k_2 + 2 * k_3 + k_4)
 
 def predictor_corrector(f, x, dt, t, bootstrap_func, x_nm1):
     """ Predictor Corrector method. 
@@ -27,9 +27,17 @@ def predictor_corrector(f, x, dt, t, bootstrap_func, x_nm1):
             - euler_richardson
             - rung_kutta
     """
-
-    if not x_nm1:
-        x_nm1 = bootstrap(f, x, dt, t)
-    else:
-        return x + (1.0/2.0)
+    if not x_nm1[0]:
+        print "Bootstrapping"
+        print x
+        x_nm1 = bootstrap_func(f, x, dt, t)
+    
+    a = (x_nm1 + x)
+    print "x_nm1", x_nm1
+    print "x", x
+    print "x_nm1 + x", a
+    res = x + (1.0/2.0) * (x_nm1 + x) * dt 
+    print "res", res
+    print "------------------"
+    return res
 
