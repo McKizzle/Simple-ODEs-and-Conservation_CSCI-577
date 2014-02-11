@@ -24,13 +24,14 @@ def main():
     sim_a = [np.array([t_0, harmonic_analytic_velocity(x_0, t_0), harmonic_analytic_position(x_0, t_0)])]
     sim_a_e = [harmonic_energy(x_0, v_0)]
 
-    dt = 0.0006
+    dt = 0.001 #0.0006
     t_max = int( 5 * 2 * np.pi + 1) # only go out to five cycles. 
     dt_steps = int(t_max / dt) + 1
     for step in range(1, dt_steps):
         t = step * dt + t_0
         tp1 = np.array([t])
         sim_d.append(np.append(tp1, ode.euler(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
+        #sim_d.append(np.append(tp1, ode.euler_richardson(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
         sim_d_e.append(harmonic_energy(sim_d[step][2], sim_d[step][1]))
         sim_a.append(np.append(tp1, [harmonic_analytic_velocity(x_0, t), harmonic_analytic_position(x_0, t)]))
         sim_a_e.append(harmonic_energy(sim_a[step][2], sim_a[step][1])) 
@@ -44,8 +45,9 @@ def main():
     sim_d = np.array(sim_d)
     sim_a = np.array(sim_a)
     sim_d_plt, = plt.plot(sim_d[:,0], sim_d[:,2], "r")
+    sim_dv_plt, = plt.plot(sim_d[:,0], sim_d[:,1], "g")
     sim_a_plt, = plt.plot(sim_a[:,0], sim_a[:,2], "b")
-    plt.legend([sim_d_plt, sim_a_plt], ['Body Position', 'Body Position Analytical'])
+    plt.legend([sim_d_plt, sim_dv_plt, sim_a_plt], ['Body Position', 'Velocity', 'Body Position Analytical'])
     plt.xlabel("Time (s)")
     plt.ylabel("Position (m)")
     plt.show()
@@ -67,7 +69,7 @@ def error_calc(x):
     return (max(x) - min(x))/max(x)
 
 def harmonic_oscillator(x, t, k=1.0, m=1.0):
-    return np.array([ -m * x[1] / k, x[0]])
+    return np.array([ -k * x[1] / m, x[0]])
 
 def harmonic_analytic_position(x_0, t, k=1.0, m=1.0):
     return x_0 * np.cos((k/m)**0.5 * t)
