@@ -30,8 +30,10 @@ def main():
     for step in range(1, dt_steps):
         t = step * dt + t_0
         tp1 = np.array([t])
-        sim_d.append(np.append(tp1, ode.euler(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
+        #sim_d.append(np.append(tp1, ode.euler(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
         #sim_d.append(np.append(tp1, ode.euler_richardson(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
+        #sim_d.append(np.append(tp1, ode.rung_kutta(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
+        #sim_d.append(np.append(tp1, ode.rung_kutta(harmonic_oscillator, sim_d[step - 1][1:3], dt, t)))
         sim_d_e.append(harmonic_energy(sim_d[step][2], sim_d[step][1]))
         sim_a.append(np.append(tp1, [harmonic_analytic_velocity(x_0, t), harmonic_analytic_position(x_0, t)]))
         sim_a_e.append(harmonic_energy(sim_a[step][2], sim_a[step][1])) 
