@@ -31,7 +31,7 @@ def main():
     sim_a_e = [None]
     sim_a_e.append(harmonic_energy(x_0, v_0))
 
-    dt = 0.001 #0.0006
+    dt = 0.0006
     t_max = int( 5 * 2 * np.pi + 1) # only go out to five cycles. 
     dt_steps = int(t_max / dt) + 1
     for step in range(2, dt_steps):
@@ -44,9 +44,6 @@ def main():
         sim_d_e.append(harmonic_energy(sim_d[step][2], sim_d[step][1]))
         sim_a.append(np.append(tp1, [harmonic_analytic_velocity(x_0, t), harmonic_analytic_position(x_0, t)]))
         sim_a_e.append(harmonic_energy(sim_a[step][2], sim_a[step][1])) 
-
-        if(step == 4):
-            exit()
 
     # Calclate the error at the fifth cycle. 
     t_fcyl = 5 * 2 * np.pi

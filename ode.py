@@ -28,16 +28,7 @@ def predictor_corrector(f, x, dt, t, bootstrap_func, x_nm1):
             - rung_kutta
     """
     if not x_nm1[0]:
-        print "Bootstrapping"
-        print x
         x_nm1 = bootstrap_func(f, x, dt, t)
     
-    a = (x_nm1 + x)
-    print "x_nm1", x_nm1
-    print "x", x
-    print "x_nm1 + x", a
-    res = x + (1.0/2.0) * (x_nm1 + x) * dt 
-    print "res", res
-    print "------------------"
-    return res
+    return x + (1.0/2.0) * (f(x_nm1, t) + f(x, t))* dt 
 
